@@ -43,7 +43,6 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         break;
                     case "2":
                         ExibeEquipamentosRegistrados(ref nomeEquipamento, ref numeroSerie, ref precoEquipamento, ref dataFabricacao, ref nomeFabricante, ref temChamado, ref indice);
-
                         break;
                     case "3":
                         EditaEquipamento(ref nomeEquipamento, ref numeroSerie, ref precoEquipamento, ref dataFabricacao, ref nomeFabricante, ref temChamado);
@@ -55,8 +54,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         RegistrarChamado(ref numeroSerie, ref temChamado, ref tituloChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref geraid, ref statusChamado);
                         break;
                     case "6":
-                        ExibeChamados(ref numeroSerie, ref temChamado, ref tituloChamado,
-             ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref statusChamado);
+                        ExibeChamados(ref numeroSerie, ref temChamado, ref tituloChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref statusChamado);
                         break;
                     case "7":
                         EditaChamado(ref numeroSerie, ref temChamado, ref tituloChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado);
@@ -65,6 +63,9 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         ExcluiChamado(ref numeroSerie, ref temChamado, ref tituloChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref statusChamado);
                         break;
                     case "9":
+                        ExibeChamadosExcluidos(ref numeroSerie, ref temChamado, ref tituloChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref statusChamado);
+                        break;
+                    case "10":
                         Environment.Exit(0);
                         break;
                 }
@@ -73,7 +74,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
             } while (1 == 1);
 
 
-            #region 
+            #region metodos
             static string ApresentaMenu()
             {
                 string opcaoMenu;
@@ -87,11 +88,12 @@ namespace ControleDeEquipamentos.ConsoleAPP
                     "\t6 - Visualizar os Chamados Registrados\n" +
                     "\t7 - Editar Chamado\n" +
                     "\t8 - Excluir Chamado\n" +
-                    "\t9 - Sair");
+                    "\t9 - Visualizar Chamados Excluidos\n" +
+                    "\t10 - Sair");
                 ApresentaMensagemEntradaDeDados("\tEscolha uma opção: ", ConsoleColor.Blue);
                 opcaoMenu = Console.ReadLine();
                 while (opcaoMenu != "1" && opcaoMenu != "2" && opcaoMenu != "3" && opcaoMenu != "4" &&
-                    opcaoMenu != "5" && opcaoMenu != "6" && opcaoMenu != "7" && opcaoMenu != "8" && opcaoMenu != "9")
+                    opcaoMenu != "5" && opcaoMenu != "6" && opcaoMenu != "7" && opcaoMenu != "8" && opcaoMenu != "9" && opcaoMenu != "10")
                 {
                     ApresentaMensagem("Opção inválida!", ConsoleColor.Red);
                     ApresentaMensagemEntradaDeDados("\tEscolha uma opção: ", ConsoleColor.Blue);
@@ -103,7 +105,6 @@ namespace ControleDeEquipamentos.ConsoleAPP
             static string RegistraEquipamento(ref string[] nomeEquipamento, ref string[] numeroSerie, ref decimal[] precoEquipamento, ref string[] dataFabricacao, ref string[] nomeFabricante, ref bool[] temChamado, ref int indice)
             {
                 string continuar;
-                //string auxChamado;
 
                 TituloSecao("1 - Registrar Novo Equipamento");
                 ImprimeLinhaEmBranco();
@@ -119,10 +120,11 @@ namespace ControleDeEquipamentos.ConsoleAPP
 
                 NomeInput("Digite o Preço:");
                 precoEquipamento[indice] = decimal.Parse(Console.ReadLine());
+                VerificaPrecoEhPositivo(ref precoEquipamento, ref indice);
                 ImprimeLinhaEmBranco();
 
-                NomeInput("Digite a Data de Fabricação (dd/mm/aaaa):");
-                dataFabricacao[indice] = Console.ReadLine();
+                NomeInput("Data de Fabricação\n");
+                RecebeEValidaEntradaDataFabricacao(ref dataFabricacao, ref indice);
                 ImprimeLinhaEmBranco();
 
                 NomeInput("Digite o Fabricante:");
@@ -130,26 +132,6 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 ImprimeLinhaEmBranco();
 
                 temChamado[indice] = false;
-
-                //NomeInput("O Equipamento possuí chamado? Digite S para sim ou N para não: ");
-                //auxChamado = Console.ReadLine();
-                //while (auxChamado != "S" && auxChamado != "N")
-                //{
-                //    ApresentaMensagem("Informe se o equipamento possuí chamado em aberto", ConsoleColor.Red);
-                //    Console.Write("\tDigite S para sim ou N para não: ");
-                //    auxChamado = Console.ReadLine();
-
-                //}
-
-                //if (auxChamado == "S")
-                //{
-                //    temChamado[indice] = true;
-
-                //}
-                //else if (auxChamado == "N")
-                //{
-                //    temChamado[indice] = false;
-                //}
 
                 indice++;
 
@@ -171,7 +153,8 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 {
                     ApresentaMensagem("O nome do equipamento deve possuir no minimo 6 caracteres", ConsoleColor.Red);
                     NomeInput("Digite o Nome:");
-                    nomeEquipamento[indice] = Console.ReadLine();
+
+                    nomeEquipamento[indice] = Console.ReadLine().ToLower();
                 }
             }
 
@@ -179,6 +162,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
             {
 
                 TituloSecao("2 - Visualizar os Equipamentos Registrados");
+                ImprimeLinhaEmBranco();
 
 
                 if (indice == 0)
@@ -189,16 +173,26 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 }
                 else
                 {
+
+
                     for (int i = 0; i < indice; i++)
                     {
                         if (numeroSerie[i] != null)
                         {
-                            Console.WriteLine("____________________");
-                            Console.WriteLine("Nome: " + nomeEquipamento[i]);
-                            Console.WriteLine("Número de Série: " + numeroSerie[i]);
-                            Console.WriteLine("Fabricante: " + nomeFabricante[i]);
-                            Console.WriteLine("Tem chamado: " + temChamado[i]);
-                            Console.WriteLine("____________________");
+                            Console.WriteLine();
+
+                            string espaco = "        ";
+
+                            teste("Nome: ");
+                            Console.Write(nomeEquipamento[i]+ espaco);
+                            teste("Nº Série: ");
+                            Console.Write(numeroSerie[i]+ espaco);
+                            teste("Fabricante: ");
+                            Console.Write(nomeFabricante[i]+ espaco);
+                            teste("Tem chamado: ");
+                            Console.Write(temChamado[i]);
+
+                            Console.WriteLine();
                         }
 
 
@@ -210,8 +204,6 @@ namespace ControleDeEquipamentos.ConsoleAPP
 
             static void EditaEquipamento(ref string[] nomeEquipamento, ref string[] numeroSerie, ref decimal[] precoEquipamento, ref string[] dataFabricacao, ref string[] nomeFabricante, ref bool[] temChamado)
             {
-                string nomeTemp;
-
                 TituloSecao("3 - Editar Equipamento");
                 ImprimeLinhaEmBranco();
 
@@ -233,18 +225,10 @@ namespace ControleDeEquipamentos.ConsoleAPP
 
                         NomeInput("Digite o novo Nome:");
 
-                        nomeTemp = Console.ReadLine();
+                        int indice = i;
+                        nomeEquipamento[indice] = Console.ReadLine();
 
-                        //verifica qtd caracter
-                        while (nomeTemp.Length < 6)
-                        {
-                            ApresentaMensagem("O nome do equipamento deve possuir no minimo 6 caracteres", ConsoleColor.Red);
-                            NomeInput("Digite o novo Nome:");
-                            nomeTemp = Console.ReadLine();
-                            continue;
-                        }
-
-                        nomeEquipamento[i] = nomeTemp;
+                        VerificaQuantidadeCaracteres(ref nomeEquipamento, ref indice);
 
                         ImprimeLinhaEmBranco();
                         NomeInput("Digite o novo Número de Série:");
@@ -253,10 +237,12 @@ namespace ControleDeEquipamentos.ConsoleAPP
 
                         NomeInput("Digite o novo Preço:");
                         precoEquipamento[i] = decimal.Parse(Console.ReadLine());
+                        VerificaPrecoEhPositivo(ref precoEquipamento, ref indice);
                         ImprimeLinhaEmBranco();
 
-                        NomeInput("Digite a nova Data de Fabricação (dd/mm/aaaa):");
-                        dataFabricacao[i] = Console.ReadLine();
+
+                        NomeInput("Data de Fabricação (dd/mm/aaaa):");
+                        RecebeEValidaEntradaDataFabricacao(ref dataFabricacao, ref indice);
                         ImprimeLinhaEmBranco();
 
                         NomeInput("Digite o novo Fabricante:");
@@ -374,7 +360,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         descricaoChamado[indiceChamado] = Console.ReadLine();
                         ImprimeLinhaEmBranco();
 
-                        NomeInput("Digite a Data de Abertura do Chamado:");
+                        NomeInput("Digite a Data de Abertura do Chamado (dd/mm/aaaa):");
                         dataAberturaChamado[indiceChamado] = Console.ReadLine();
                         ImprimeLinhaEmBranco();
 
@@ -414,6 +400,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                     Console.ReadLine();
 
                 }
+
                 else
                 {
                     for (int i = 0; i < indiceChamado; i++)
@@ -426,7 +413,12 @@ namespace ControleDeEquipamentos.ConsoleAPP
                             Console.WriteLine("Nº Série Equipamento: " + numeroSerie[i]);
                             Console.WriteLine("Descrição do Chamado: " + descricaoChamado[i]);
                             Console.WriteLine("Data de Abertura: " + dataAberturaChamado[i]);
-                            Console.WriteLine("Dias em aberto:");
+
+                            string strData = dataAberturaChamado[i];
+                            DateTime DateObject = Convert.ToDateTime(strData);
+                            TimeSpan diasEmAberto = DateTime.Today - DateObject;
+
+                            Console.WriteLine("Dias em aberto: " + diasEmAberto.TotalDays);
                             Console.WriteLine("____________________");
 
                         }
@@ -440,8 +432,11 @@ namespace ControleDeEquipamentos.ConsoleAPP
             static void EditaChamado(ref string[] numeroSerie, ref bool[] temChamado, ref string[] tituloChamado, ref string[] descricaoChamado, ref string[] dataAberturaChamado, ref int indiceChamado, ref int[] idChamado)
             {
                 bool chamadoExiste = false;
+                bool numeroSerieExiste = false;
+                string numeroSerieSelecionado;
                 TituloSecao("7 - Editar Chamado");
                 ImprimeLinhaEmBranco();
+
                 NomeInput("Digite o indice do chamado que deseja editar:");
                 int chamadoSelecionado = int.Parse(Console.ReadLine());
 
@@ -454,30 +449,45 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         ApresentaMensagem("Editando Chamado ID = " + idChamado[i], ConsoleColor.Blue);
 
                         NomeInput("Digite o Número de Série do Equipamento:");
-                        numeroSerie[i] = Console.ReadLine();
-                        ImprimeLinhaEmBranco();
+                        numeroSerieSelecionado = Console.ReadLine();
 
-                        NomeInput("Digite o novo Titulo do Chamado:");
-                        tituloChamado[i] = Console.ReadLine();
-                        ImprimeLinhaEmBranco();
+                        if (numeroSerieSelecionado == numeroSerie[i])
+                        {
+                            numeroSerieExiste = true;
 
-                        NomeInput("Digite a nova Descrição do Chamado:");
-                        descricaoChamado[i] = Console.ReadLine();
-                        ImprimeLinhaEmBranco();
+                            ImprimeLinhaEmBranco();
 
-                        NomeInput("Digite a nova Data de Abertura do Chamado:");
-                        dataAberturaChamado[i] = Console.ReadLine();
-                        ImprimeLinhaEmBranco();
+                            NomeInput("Digite o novo Titulo do Chamado:");
+                            tituloChamado[i] = Console.ReadLine();
+                            ImprimeLinhaEmBranco();
 
-                        ApresentaMensagem("Chamado editado com sucesso!", ConsoleColor.Green);
+                            NomeInput("Digite a nova Descrição do Chamado:");
+                            descricaoChamado[i] = Console.ReadLine();
+                            ImprimeLinhaEmBranco();
+
+                            NomeInput("Digite a nova Data de Abertura do Chamado:");
+                            dataAberturaChamado[i] = Console.ReadLine();
+                            ImprimeLinhaEmBranco();
+
+                            ApresentaMensagem("Chamado editado com sucesso!", ConsoleColor.Green);
+                        }
+
 
                     }
                 }
+
 
                 if (chamadoExiste == false)
                 {
                     ApresentaMensagem("Chamado não encontrado! Verifique o ID do Chamado e tente novamente!", ConsoleColor.Red);
                 }
+
+                else if (numeroSerieExiste == false)
+                {
+                    ApresentaMensagem("Equipamento não existe. Verifique o Nº de Série e tente novamente!", ConsoleColor.Red);
+
+                }
+
                 Console.ReadLine();
 
             }
@@ -503,12 +513,14 @@ namespace ControleDeEquipamentos.ConsoleAPP
 
                         if (statusChamado[i] == true)
                         {
-                            ApresentaMensagem("Deseja remover o chamado ID = " + numeroSerie[i] + "? Digite S para Confirmar ou N para cancelar", ConsoleColor.Red);
+                            ApresentaMensagem("Deseja remover o chamado ID = " + idChamado[i] + "? Digite S para Confirmar ou N para cancelar", ConsoleColor.Red);
                             confirmacao = Console.ReadLine();
                             while (confirmacao != "S" && confirmacao != "N")
                             {
                                 ApresentaMensagem("Opção inválida!", ConsoleColor.Red);
-                                ApresentaMensagem("Deseja remover o equipamento com Nº de série " + numeroSerie[i] + "? Digite S para Confirmar ou N para cancelar: ", ConsoleColor.Red);
+                                ApresentaMensagem("Deseja remover o chamado ID = " + idChamado[i] + "? Digite S para Confirmar ou N para cancelar", ConsoleColor.Red);
+
+
                                 confirmacao = Console.ReadLine();
                             }
                             if (confirmacao == "S")
@@ -516,7 +528,8 @@ namespace ControleDeEquipamentos.ConsoleAPP
                                 temChamado[i] = false;
                                 statusChamado[i] = false;
                                 ApresentaMensagem("Chamado removido com sucesso!", ConsoleColor.Green);
-                            } else if(confirmacao == "N")
+                            }
+                            else if (confirmacao == "N")
                             {
                                 ApresentaMensagem("Operação cancelada!", ConsoleColor.Yellow);
 
@@ -533,9 +546,78 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 }
                 Console.ReadLine();
             }
+
+            static void VerificaPrecoEhPositivo(ref decimal[] precoEquipamento, ref int indice)
+            {
+                while (precoEquipamento[indice] <= -0)
+                {
+                    ApresentaMensagem("O Preço do Equipamento deve ser decimal, positivo e maior que zero", ConsoleColor.Red);
+                    NomeInput("Digite o Preço:");
+                    precoEquipamento[indice] = decimal.Parse(Console.ReadLine());
+
+                }
+            }
+
+            static void ExibeChamadosExcluidos(ref string[] numeroSerie, ref bool[] temChamado, ref string[] tituloChamado,
+                ref string[] descricaoChamado, ref string[] dataAberturaChamado, ref int indiceChamado, ref int[] idChamado, ref bool[] statusChamado)
+            {
+                for (int i = 0; i < indiceChamado; i++)
+                {
+                    if (statusChamado[i] == false)
+                    {
+                        Console.WriteLine("____________________");
+                        Console.WriteLine("ID chamado:" + idChamado[i]);
+                        Console.WriteLine("Titulo Chamado: " + tituloChamado[i]);
+                        Console.WriteLine("Nº Série Equipamento: " + numeroSerie[i]);
+                        Console.WriteLine("Descrição do Chamado: " + descricaoChamado[i]);
+                        Console.WriteLine("Data de Abertura: " + dataAberturaChamado[i]);
+                        Console.WriteLine("Dias em aberto:");
+                        Console.WriteLine("____________________");
+
+                    }
+                }
+
+            }
+
+            static void RecebeEValidaEntradaDataFabricacao(ref string[] dataFabricacao, ref int indice)
+            {
+                NomeInput("Digite o dia (dd):");
+                int dia = int.Parse(Console.ReadLine());
+                while (dia <= 0 || dia > 31)
+                {
+                    ApresentaMensagem("É permitido valores entre 01 e 31", ConsoleColor.Red);
+                    NomeInput("Digite o dia (dd):");
+                    dia = int.Parse(Console.ReadLine());
+                }
+                NomeInput("Digite o mês (mm):");
+                int mes = int.Parse(Console.ReadLine());
+                while (mes < 1 || mes > 12)
+                {
+                    ApresentaMensagem("É permitido valores entre 01 e 12", ConsoleColor.Red);
+                    NomeInput("Digite o mês (mm):");
+                    mes = int.Parse(Console.ReadLine());
+                }
+                NomeInput("Digite o ano (aaaa):");
+                int ano = int.Parse(Console.ReadLine());
+                while (ano < 2000 || ano > 2022)
+                {
+                    ApresentaMensagem("É permitido valores entre 2000 e 2022", ConsoleColor.Red);
+                    NomeInput("Digite o ano (aaaa):");
+                    ano = int.Parse(Console.ReadLine());
+                }
+
+                DateTime dataF = new DateTime(ano, mes, dia);
+
+                dataFabricacao[indice] = Convert.ToString(dataF);
+
+                //  Console.WriteLine(dataFabricacao[indice]);
+            }
+
+
+
             #endregion
 
-            #region metodos estilizacao
+            #region  estilizacao
 
             static void ApresentaMensagem(string mensagem, ConsoleColor cor)
             {
@@ -574,6 +656,13 @@ namespace ControleDeEquipamentos.ConsoleAPP
             static void NomeInput(string nome)
             {
                 Console.Write("\t" + nome + " ");
+            }
+
+            static void teste(string teste)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(teste);
+                Console.ResetColor();
             }
             #endregion
         }
