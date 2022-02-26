@@ -18,7 +18,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
             string[] nomeFabricante = new string[1000];
             bool[] temChamado = new bool[1000];
             int indice = 0;
-
+            //variaveis chamado
             int[] idChamado = new int[1000];
             string[] tituloChamado = new string[1000];
             string[] descricaoChamado = new string[1000];
@@ -103,7 +103,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
             static string RegistraEquipamento(ref string[] nomeEquipamento, ref string[] numeroSerie, ref decimal[] precoEquipamento, ref string[] dataFabricacao, ref string[] nomeFabricante, ref bool[] temChamado, ref int indice)
             {
                 string continuar;
-                string auxChamado;
+                //string auxChamado;
 
                 TituloSecao("1 - Registrar Novo Equipamento");
                 ImprimeLinhaEmBranco();
@@ -129,25 +129,27 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 nomeFabricante[indice] = Console.ReadLine();
                 ImprimeLinhaEmBranco();
 
-                NomeInput("O Equipamento possuí chamado? Digite S para sim ou N para não: ");
-                auxChamado = Console.ReadLine();
-                while (auxChamado != "S" && auxChamado != "N")
-                {
-                    ApresentaMensagem("Informe se o equipamento possuí chamado em aberto", ConsoleColor.Red);
-                    Console.Write("\tDigite S para sim ou N para não: ");
-                    auxChamado = Console.ReadLine();
+                temChamado[indice] = false;
 
-                }
+                //NomeInput("O Equipamento possuí chamado? Digite S para sim ou N para não: ");
+                //auxChamado = Console.ReadLine();
+                //while (auxChamado != "S" && auxChamado != "N")
+                //{
+                //    ApresentaMensagem("Informe se o equipamento possuí chamado em aberto", ConsoleColor.Red);
+                //    Console.Write("\tDigite S para sim ou N para não: ");
+                //    auxChamado = Console.ReadLine();
 
-                if (auxChamado == "S")
-                {
-                    temChamado[indice] = true;
+                //}
 
-                }
-                else if (auxChamado == "N")
-                {
-                    temChamado[indice] = false;
-                }
+                //if (auxChamado == "S")
+                //{
+                //    temChamado[indice] = true;
+
+                //}
+                //else if (auxChamado == "N")
+                //{
+                //    temChamado[indice] = false;
+                //}
 
                 indice++;
 
@@ -208,11 +210,10 @@ namespace ControleDeEquipamentos.ConsoleAPP
 
             static void EditaEquipamento(ref string[] nomeEquipamento, ref string[] numeroSerie, ref decimal[] precoEquipamento, ref string[] dataFabricacao, ref string[] nomeFabricante, ref bool[] temChamado)
             {
+                string nomeTemp;
+
                 TituloSecao("3 - Editar Equipamento");
                 ImprimeLinhaEmBranco();
-
-                string auxChamado;
-                string nomeTemp;
 
 
                 NomeInput("Digite o Nº de Série do equipamento que deseja editar:");
@@ -262,28 +263,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         nomeFabricante[i] = Console.ReadLine();
                         ImprimeLinhaEmBranco();
 
-                        NomeInput("O Equipamento possuí chamado? Digite S para sim ou N para não: ");
-                        auxChamado = Console.ReadLine();
 
-                        while (auxChamado != "S" && auxChamado != "N")
-                        {
-                            ApresentaMensagem("Informe se o equipamento possuí chamado em aberto", ConsoleColor.Red);
-                            NomeInput("Digite S para sim ou N para não:");
-                            auxChamado = Console.ReadLine();
-
-                        }
-
-                        if (auxChamado == "S")
-                        {
-                            temChamado[i] = true;
-
-                        }
-                        else if (auxChamado == "N")
-                        {
-                            temChamado[i] = false;
-                        }
-
-                        ImprimeLinhaEmBranco();
                         ApresentaMensagem("Equipamento editado com sucesso!", ConsoleColor.Green);
 
                     }
