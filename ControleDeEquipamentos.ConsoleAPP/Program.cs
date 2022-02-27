@@ -360,7 +360,8 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 if (indiceChamado == 0)
                 {
                     ApresentaMensagem("Não há chamados registrados!", ConsoleColor.Red);
-                    Console.ReadLine();
+                Console.ReadLine();
+
 
                 }
 
@@ -368,7 +369,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 {
                     for (int i = 0; i < indiceChamado; i++)
                     {
-                        if (statusChamado[i] == true)
+                        if (statusChamado[i]==true)
                         {
                             ImprimeLinhaEmBranco();
                             NomeCampo("ID: ");
@@ -404,64 +405,51 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 bool numeroSerieExiste = false;
                 string numeroSerieSelecionado;
                 TituloSecao("7 - Editar Chamado");
+                ImprimeLinhaEmBranco();
 
+               
                 NomeInput("Digite o ID do Chamado que deseja editar:");
                 int chamadoSelecionado = int.Parse(Console.ReadLine());
 
                 for (int i = 0; i < idChamado.Length; i++)
                 {
 
-                    if (chamadoSelecionado == idChamado[i])
-                    {
-                        chamadoExiste = true;
-                        ApresentaMensagem("Editando Chamado ID = " + idChamado[i], ConsoleColor.Blue);
-
-                        NomeInput("Digite o Número de Série do Equipamento:");
-                        numeroSerieSelecionado = Console.ReadLine();
-
-                        if (numeroSerieSelecionado == numeroSerie[i])
+                    if (chamadoSelecionado == idChamado[i]) 
+                        if (chamadoSelecionado == idChamado[i])
                         {
-                            numeroSerieExiste = true;
+                            chamadoExiste = true;
+                            ApresentaMensagem("Editando Chamado ID = " + idChamado[i], ConsoleColor.Blue);
+                            NomeInput("Digite o Número de Série do Equipamento:");
+                            numeroSerieSelecionado = Console.ReadLine();
+                            if (numeroSerieSelecionado == numeroSerie[i])
+                            {
+                                numeroSerieExiste = true;
+                                ImprimeLinhaEmBranco();
+                                NomeInput("Digite o novo Titulo do Chamado:");
+                                tituloChamado[i] = Console.ReadLine();
+                                ImprimeLinhaEmBranco();
+                                NomeInput("Digite a nova Descrição do Chamado:");
+                                descricaoChamado[i] = Console.ReadLine();
+                                ImprimeLinhaEmBranco();
 
-                            ImprimeLinhaEmBranco();
+                                NomeInput("Data de Abertura do Chamado\n");
+                                ValidaDataChamado(ref dataAberturaChamado, ref indiceChamado);
+                                ImprimeLinhaEmBranco();
 
-                            NomeInput("Digite o novo Titulo do Chamado:");
-                            tituloChamado[i] = Console.ReadLine();
-                            ImprimeLinhaEmBranco();
+                                ApresentaMensagem("Chamado editado com sucesso!", ConsoleColor.Green);
+                            }
 
-                            NomeInput("Digite a nova Descrição do Chamado:");
-                            descricaoChamado[i] = Console.ReadLine();
-                            ImprimeLinhaEmBranco();
-
-                            indiceChamado = i;
-                            NomeInput("Data de Abertura do Chamado\n");
-                            ValidaDataChamado(ref dataAberturaChamado, ref indiceChamado);
-                            ImprimeLinhaEmBranco();
-
-                            temChamado[i] = true;
-                            statusChamado[i] = true;
-
-                            ApresentaMensagem("Chamado editado com sucesso!", ConsoleColor.Green);
                         }
-
-
-                    }
                 }
-
-
                 if (chamadoExiste == false)
                 {
                     ApresentaMensagem("Chamado não encontrado! Verifique o ID do Chamado e tente novamente!", ConsoleColor.Red);
                 }
-
                 else if (numeroSerieExiste == false)
                 {
-                    ApresentaMensagem("Equipamento não existe. Verifique o Nº de Série e tente novamente!", ConsoleColor.Red);
-
+                    ApresentaMensagem("Verifique o Nº de Série e tente novamente!", ConsoleColor.Red);
                 }
-
                 Console.ReadLine();
-
             }
 
             static void ExcluiChamado(ref string[] numeroSerie, ref bool[] temChamado, ref string[] tituloChamado, ref string[] descricaoChamado, ref string[] dataAberturaChamado, ref int indiceChamado, ref int[] idChamado, ref bool[] statusChamado)
@@ -494,7 +482,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                             }
                             if (confirmacao == "S")
                             {
-                                idChamado = null;
+                                idChamado[i] = 0;
                                 temChamado[i] = false;
                                 statusChamado[i] = false;
                                 ApresentaMensagem("Chamado removido com sucesso!", ConsoleColor.Green);
@@ -559,6 +547,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 DateTime date = new DateTime(ano, mes, dia);
 
                 dataAberturaChamado[indiceChamado] = Convert.ToString(date);
+               
 
             }
 
