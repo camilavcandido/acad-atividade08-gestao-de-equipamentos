@@ -50,7 +50,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         ExcluiEquipamento(ref nomeEquipamento, ref numeroSerie, ref precoEquipamento, ref dataFabricacao, ref nomeFabricante, ref temChamado);
                         break;
                     case "5":
-                        RegistrarChamado(ref numeroSerie, ref temChamado, ref tituloChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref geraid, ref statusChamado);
+                        RegistraChamado(ref numeroSerie, ref temChamado, ref tituloChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref geraid, ref statusChamado);
                         break;
                     case "6":
                         ExibeChamados(ref numeroSerie, ref tituloChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref statusChamado);
@@ -59,7 +59,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         EditaChamado(ref numeroSerie, ref tituloChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref statusChamado);
                         break;
                     case "8":
-                        ExcluiChamado(ref tituloChamado, ref temChamado,ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref statusChamado);
+                        ExcluiChamado(ref tituloChamado, ref temChamado, ref descricaoChamado, ref dataAberturaChamado, ref indiceChamado, ref idChamado, ref statusChamado);
                         break;
                     case "9":
                         Environment.Exit(0);
@@ -102,7 +102,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
             static string RegistraEquipamento(ref string[] nomeEquipamento, ref string[] numeroSerie, ref decimal[] precoEquipamento, ref string[] dataFabricacao, ref string[] nomeFabricante, ref bool[] temChamado, ref int indice)
             {
                 string continuar;
-                //string numeroSerieDigitado;
+                string numeroSerieDigitado;
 
                 TituloSecao("1 - Registrar Novo Equipamento");
 
@@ -112,27 +112,22 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 ImprimeLinhaEmBranco();
 
                 NomeInput("Digite o Número de Série (S/N):");
-                numeroSerie[indice] = Console.ReadLine();
-
-                //bool existe = false;
-
-                //for(int i = 0; i < numeroSerie.Length; i++)
-                //{
-                //    while(numeroSerieDigitado == numeroSerie[i])
-                //    {
-                //        existe = true;
-                //        ApresentaMensagem("Número de Série já registrado em outro equipamento", ConsoleColor.Red);
-                //        NomeInput("Digite o Número de Série (S/N):");
-                //        numeroSerieDigitado = Console.ReadLine();
-                //    }
-                //    if (existe == false)
-                //    {
-                //        numeroSerie[indice] = numeroSerieDigitado;
-                //    }
-
-                //}
+                numeroSerieDigitado = Console.ReadLine();
 
 
+                for (int i = 0; i < numeroSerie.Length; i++)
+                {
+                    while (numeroSerieDigitado == numeroSerie[i])
+                    {
+                        ApresentaMensagem("Número de Série já registrado em outro equipamento", ConsoleColor.Red);
+                        NomeInput("Digite o Número de Série (S/N):");
+                        numeroSerieDigitado = Console.ReadLine();
+                    }
+
+                }
+
+
+                numeroSerie[indice] = numeroSerieDigitado;
 
 
                 ImprimeLinhaEmBranco();
@@ -151,7 +146,6 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 ImprimeLinhaEmBranco();
 
                 temChamado[indice] = false;
-
 
 
                 indice++;
@@ -234,7 +228,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
 
                 else
                 {
-                    for (int i = 0; i < indice; i++)
+                    for (int i = 0; i <= indice; i++)
                     {
                         if (numeroSerie[i] != null)
                         {
@@ -260,6 +254,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
             {
                 #region variaveis
                 string numeroSerieSelecionado;
+                string novoNumeroSerie;
                 bool numeroSerieExiste = false;
                 int indice;
                 #endregion
@@ -286,8 +281,27 @@ namespace ControleDeEquipamentos.ConsoleAPP
                         ImprimeLinhaEmBranco();
 
                         NomeInput("Digite o novo Número de Série (S/N) :");
-                        numeroSerie[i] = Console.ReadLine();
+                        novoNumeroSerie = Console.ReadLine();
+
+
+                        //verifica que o novo numero de série já existe em outro equipamento
+                        for (int j = 0; j < numeroSerie.Length; j++)
+                        {
+                            while (novoNumeroSerie == numeroSerie[j])
+                            {
+
+                                ApresentaMensagem("Número de Série já registrado em outro equipamento", ConsoleColor.Red);
+                                NomeInput("Digite o Número de Série (S/N):");
+                                novoNumeroSerie = Console.ReadLine();
+                            }
+
+                        }
+
+                        numeroSerie[indice] = novoNumeroSerie;
+
                         ImprimeLinhaEmBranco();
+
+
 
                         NomeInput("Digite o novo Preço:");
                         precoEquipamento[i] = decimal.Parse(Console.ReadLine());
@@ -389,7 +403,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
             }
 
 
-            static void RegistrarChamado(ref string[] numeroSerie, ref bool[] temChamado, ref string[] tituloChamado,
+            static void RegistraChamado(ref string[] numeroSerie, ref bool[] temChamado, ref string[] tituloChamado,
                 ref string[] descricaoChamado, ref string[] dataAberturaChamado, ref int indiceChamado, ref int[] idChamado, ref int geraid, ref bool[] statusChamado)
             {
                 string numeroSerieSelecionado;
@@ -406,35 +420,44 @@ namespace ControleDeEquipamentos.ConsoleAPP
 
                     if (numeroSerie[i] == numeroSerieSelecionado)
                     {
-
                         numeroSerieExiste = true;
 
-                        NomeInput("Digite o Título do Chamado:");
-                        tituloChamado[indiceChamado] = Console.ReadLine();
-                        ImprimeLinhaEmBranco();
+                        if (temChamado[i] == true)
+                        {
+                            ApresentaMensagem("Já existe um chamado em aberto para este equipamento", ConsoleColor.Red);
 
-                        NomeInput("Digite a Descrição do Chamado:");
-                        descricaoChamado[indiceChamado] = Console.ReadLine();
-                        ImprimeLinhaEmBranco();
-
-                        NomeInput("Data de Abertura do Chamado\n");
-                        ValidaDataChamado(ref dataAberturaChamado, ref indiceChamado);
-                        ImprimeLinhaEmBranco();
-
-                        idChamado[indiceChamado] = geraid;
-                      
-                        indiceChamado++;
-
-                        geraid++;
-
-                        temChamado[i] = true;
-
-                        statusChamado[i] = true;
+                        }
+                        else
+                        {
 
 
-                        ApresentaMensagem("Chamado registrado com sucesso!", ConsoleColor.Green);
+
+                            NomeInput("Digite o Título do Chamado:");
+                            tituloChamado[indiceChamado] = Console.ReadLine();
+                            ImprimeLinhaEmBranco();
+
+                            NomeInput("Digite a Descrição do Chamado:");
+                            descricaoChamado[indiceChamado] = Console.ReadLine();
+                            ImprimeLinhaEmBranco();
+
+                            NomeInput("Data de Abertura do Chamado\n");
+                            ValidaDataChamado(ref dataAberturaChamado, ref indiceChamado);
+                            ImprimeLinhaEmBranco();
+
+                            idChamado[indiceChamado] = geraid;
+
+                            indiceChamado++;
+
+                            geraid++;
+
+                            temChamado[i] = true;
+
+                            statusChamado[i] = true;
 
 
+                            ApresentaMensagem("Chamado registrado com sucesso!", ConsoleColor.Green);
+
+                        }
                     }
 
                 }
@@ -455,8 +478,6 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 if (indiceChamado == 0)
                 {
                     ApresentaMensagem("Não há chamados registrados!", ConsoleColor.Red);
-                    Console.ReadLine();
-
 
                 }
 
@@ -509,32 +530,32 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 for (int i = 0; i < idChamado.Length; i++)
                 {
 
-                    
-                        if (chamadoSelecionado == idChamado[i] && chamadoSelecionado>0)
+
+                    if (chamadoSelecionado == idChamado[i] && chamadoSelecionado > 0)
+                    {
+                        chamadoExiste = true;
+                        ApresentaMensagem("Editando Chamado ID = " + idChamado[i], ConsoleColor.Blue);
+                        NomeInput("Digite o Número de Série do Equipamento:");
+                        numeroSerieSelecionado = Console.ReadLine();
+                        if (numeroSerieSelecionado == numeroSerie[i])
                         {
-                            chamadoExiste = true;
-                            ApresentaMensagem("Editando Chamado ID = " + idChamado[i], ConsoleColor.Blue);
-                            NomeInput("Digite o Número de Série do Equipamento:");
-                            numeroSerieSelecionado = Console.ReadLine();
-                            if (numeroSerieSelecionado == numeroSerie[i])
-                            {
-                                numeroSerieExiste = true;
-                                ImprimeLinhaEmBranco();
-                                NomeInput("Digite o novo Titulo do Chamado:");
-                                tituloChamado[i] = Console.ReadLine();
-                                ImprimeLinhaEmBranco();
-                                NomeInput("Digite a nova Descrição do Chamado:");
-                                descricaoChamado[i] = Console.ReadLine();
-                                ImprimeLinhaEmBranco();
+                            numeroSerieExiste = true;
+                            ImprimeLinhaEmBranco();
+                            NomeInput("Digite o novo Titulo do Chamado:");
+                            tituloChamado[i] = Console.ReadLine();
+                            ImprimeLinhaEmBranco();
+                            NomeInput("Digite a nova Descrição do Chamado:");
+                            descricaoChamado[i] = Console.ReadLine();
+                            ImprimeLinhaEmBranco();
 
-                                NomeInput("Data de Abertura do Chamado\n");
-                                ValidaDataChamado(ref dataAberturaChamado, ref indiceChamado);
-                                ImprimeLinhaEmBranco();
+                            NomeInput("Data de Abertura do Chamado\n");
+                            ValidaDataChamado(ref dataAberturaChamado, ref indiceChamado);
+                            ImprimeLinhaEmBranco();
 
-                                ApresentaMensagem("Chamado editado com sucesso!", ConsoleColor.Green);
-                            }
-
+                            ApresentaMensagem("Chamado editado com sucesso!", ConsoleColor.Green);
                         }
+
+                    }
                 }
                 if (chamadoExiste == false)
                 {
@@ -547,7 +568,7 @@ namespace ControleDeEquipamentos.ConsoleAPP
                 Console.ReadLine();
             }
 
-            static void ExcluiChamado(ref string[] tituloChamado, ref bool[] temChamado,  ref string[] descricaoChamado, ref string[] dataAberturaChamado, ref int indiceChamado, ref int[] idChamado, ref bool[] statusChamado)
+            static void ExcluiChamado(ref string[] tituloChamado, ref bool[] temChamado, ref string[] descricaoChamado, ref string[] dataAberturaChamado, ref int indiceChamado, ref int[] idChamado, ref bool[] statusChamado)
             {
 
                 int idChamadoSelecionado;
@@ -641,9 +662,9 @@ namespace ControleDeEquipamentos.ConsoleAPP
             {
                 qtd = 0;
 
-                for(int i=0; i<tituloChamado.Length; i++)
+                for (int i = 0; i < tituloChamado.Length; i++)
                 {
-                    if(tituloChamado[i] != null)
+                    if (tituloChamado[i] != null)
                     {
                         qtd++;
                     }
